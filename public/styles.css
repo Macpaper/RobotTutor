@@ -1,0 +1,103 @@
+/* pallette: #f4d4d5, #fae9da, #c3e0dd, #a9d6e5, #8bc3df, #5aa8d9, #3a8fc2, #1a7fb6, #fae1a0,
+#92b4e1, #7f7a9d */
+:root {
+    --primary-color: #f4d4d5;
+    --secondary-color: #fae9da;
+    --accent-color: #c3e0dd;
+    --background-color: #a9d6e5;
+    --text-color: #1a252a;
+    --button-color: #5aa8d9;
+    --button-hover-color: #3a8fc2;
+    --border-color: #1a7fb6;
+    --highlight-color: #fae1a0;
+    --code-background-color: #92b4e1;
+    --code-text-color: #7f7a9d;
+}
+#editor {
+    width: 100%; min-height: 250px; border: 1px solid #ccc;
+}
+
+.code-block {
+    width: 100%;
+    min-height: 250px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+footer {
+    margin-top: auto;
+    padding: 20px;
+    text-align: center;
+    border-top: 1px solid var(--border-color);
+}
+
+a {
+    color: var(--text-color);
+}
+
+.nav-bar {
+    background-color: var(--primary-color);
+    padding: 25px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    font: bold 28px Arial, sans-serif;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+.nav-links {
+    display: flex;
+    gap: 40px;
+}
+.nav-links a {
+    color: var(--text-color);
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 24px;
+    transition: all 0.3s ease;
+    padding: 8px 16px;
+    border-radius: 8px;
+}
+.nav-links a:hover {
+    color: white;
+    background-color: var(--button-hover-color);
+    transform: scale(1.1);
+}
+.logout-button {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 20px;
+}
+.logout-button a {
+    color: white;
+    background-color: var(--button-color);
+    padding: 10px 18px;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+.logout-button a:hover {
+    background-color: var(--button-hover-color);
+    transform: translateY(-2px);
+}
+.logout-button span {
+    font-size: 20px;
+    color: var(--text-color);
+}
+
+h1 {
+    text-align: center;
+    font-size: 48px;
+    margin: 30px 0;
+    color: var(--border-color);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}

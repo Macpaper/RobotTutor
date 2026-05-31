@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/login.css">
+  <!-- <script src="your-shared-scripts.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.29.4/full/pyodide.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+  <nav class="nav-bar">
+    <div class="logo">Robot Tutor</div>
+    <div class="nav-links">
+        <a href="/">Dashboard</a>
+        <a href="/lessons">Lessons</a>
+        <a href="/exercises">Exercises</a>
+    </div>
+    <div class="logout-button">
+        <% if (studentId || isTeacher) { %>
+            <span>Hello, <%= username || 'Teacher' %></span>
+            <a href="/logout">Logout</a>
+        <% } %>
+    </div>
+  </nav>
+
+  <%- body %>   <!-- each page's unique content goes here -->
+
+  <footer>Robot Tutor</footer>
+</body>
+</html>

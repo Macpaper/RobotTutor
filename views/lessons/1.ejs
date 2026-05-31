@@ -1,0 +1,78 @@
+<h1>Introduction to Python</h1>
+<p>Welcome to the first lesson of our Python course! In this lesson, we will cover the
+     basics of Python programming, including syntax, variables, and data types. By the end of this lesson, 
+     you will have a solid foundation to start writing your own Python code.</p>
+<h2>Python Syntax</h2>
+<p>Python uses indentation to define blocks of code. This means that instead of using 
+    curly braces or keywords to indicate the start and end of a block, Python 
+    relies on the level of indentation. For example:</p>
+<pre><code class="language-python">if x &gt; 0:
+    print("x is positive")
+else:
+    print("x is not positive")
+</code></pre>
+<p>In this example, the code inside the if and else blocks is indented, indicating
+     that it belongs to those blocks.</p>
+<h2>Variables</h2>
+<p>In Python, you can create variables to store data. A variable is created by 
+    assigning a value to it using the equals sign (=). For example:</p>
+<pre><code class="language-python">name = "Alice"
+age = 30
+is_student = True
+</code></pre>
+<p>In this example, we have created three variables: name, age, and is_student. 
+    The name variable stores a string, the age variable stores an integer, and 
+    the is_student variable stores a boolean value.</p>
+<h2>Data Types</h2>
+<p>Python has several built-in data types, including:</p>
+<ul>
+    <li><strong>String:</strong> A sequence of characters, enclosed in quotes.</li>
+    <pre><code class="language-python">name = "Alice"</code></pre>
+    <li><strong>Integer:</strong> A whole number.</li>
+    <pre><code class="language-python">number = 42</code></pre>
+    <li><strong>Float:</strong> A decimal number.</li>
+    <pre><code class="language-python">pi = 3.14</code></pre>
+    <li><strong>Boolean:</strong> A value that can be either True or False.</li>
+    <pre><code class="language-python">is_student = True</code></pre>
+    <li><strong>List:</strong> An ordered collection of items, enclosed in square brackets.</li>
+    <pre><code class="language-python">fruits = ["apple", "banana", "cherry"]</code></pre>
+    <li><strong>Dictionary:</strong> A collection of key-value pairs, enclosed in curly braces.</li>
+    <pre><code class="language-python">person = {"name": "Alice", "age": 30}</code></pre>
+</ul>
+
+<p>Understanding these basic data types is essential for writing effective Python code. 
+    In the next lesson, we will explore control structures, which allow you to control
+     the flow of your program based on certain conditions.</p>
+    
+<p>Now complete the following exercise to demonstrate your understanding:</p>
+<!-- <p>Create a Python program that defines variables for your name, age, and a list of your favorite foods.</p>
+<p>Then print out the values of these variables.</p> -->
+<button onclick="getHint()">💡 Get a Hint</button>
+<div id="hint-box" style="display:none;">
+  <strong>AI Tutor:</strong>
+  <div id="hint-content"></div>
+</div>
+<div id="exercise-area">
+    <h3 id="exercise-title"></h3>
+    <p id="exercise-counter"></p>
+    <p id="exercise-description"></p>
+    <div id="editor" style="height: 300px;"></div>
+    <button onclick="submitCode()">Submit</button>
+    <p id="feedback"></p>
+</div>
+
+<!-- Define THIS lesson's exercises -->
+<script>
+  window.lessonExercises = [
+    {
+      id: 1,
+      description: 'Define variables for your name, age, and a list of favorite foods. Print out the values of these variables.',
+      starterCode: '# Define your variables here\n',
+    },
+  ];
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.0/min/vs/loader.min.js"></script>
+<script src="/javascripts/lesson.js"></script>
+<!-- <%- include('./lessonTemplate') %> -->

@@ -1,0 +1,17 @@
+<h1>Login</h1>
+
+<% if (error) { %>
+  <p style="color: red;"><%= error %></p>
+<% } %>
+
+<div class="login-container">
+    <form method="POST" action="/login" class="login-form">
+    <label>Username</label>
+    <input type="text" name="username" class="username-textbox"/>
+
+    <label>Password</label>
+    <input type="password" name="password" class="password-textbox"/>
+
+    <button type="submit" class="login-button">Login</button>
+    </form>
+</div>
