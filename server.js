@@ -24,6 +24,7 @@ app.set('layout', 'layout');
 // Middleware
 app.use(express.static('public'));
 app.use('/scripts', express.static('scripts'));
+app.use('/node_modules', express.static(path.join(__dirname, 'node_modules')));
 app.use(express.json());
 
 app.use(express.urlencoded({ extended: true })); 

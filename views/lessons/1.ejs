@@ -1,4 +1,25 @@
 <h1>Introduction to Python</h1>
+<p>Click the run button on this code.</p>
+<div class="try-it">
+    <div class="try-it-header">
+        <span class="try-it-label">Try it yourself</span>
+        <button class="run-btn" onclick="runMiniEditor(this)">▶ Run</button>
+    </div>
+    <div class="try-it-body">
+        <div class="editor-pane">
+            <textarea name="Alice" class="mini-editor">
+name = "Alice"
+print(name)
+            </textarea>
+        </div>
+        <div class="output-pane">
+            <div class="output-label">output</div>
+            <pre class="mini-output"></pre>
+        </div>
+    </div>
+</div>
+
+
 <p>Welcome to the first lesson of our Python course! In this lesson, we will cover the
      basics of Python programming, including syntax, variables, and data types. By the end of this lesson, 
      you will have a solid foundation to start writing your own Python code.</p>
@@ -72,7 +93,4 @@ is_student = True
   ];
 </script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.0/min/vs/loader.min.js"></script>
-<script src="/javascripts/lesson.js"></script>
-<!-- <%- include('./lessonTemplate') %> -->
+<%- include('./lessonTemplate') %>

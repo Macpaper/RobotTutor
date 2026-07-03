@@ -55,6 +55,7 @@ str(has_list and has_subscript)
 let currentIndex = 0;
 let editorInstance = null;
 let pyodide = null;
+window.miniEditors = [];
 
 require.config({
   paths: { vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.0/min/vs' }
@@ -89,6 +90,7 @@ function initializeEditor() {
     minimap: { enabled: false },
     automaticLayout: true,
   });
+  window.editorInstance = editorInstance;
 
   loadExercise(0);
 }
@@ -125,6 +127,7 @@ async function getHint() {
 
   const { hint } = await res.json();
   hintContent.innerHTML = marked.parse(hint);  // renders markdown properly
+  speakHint(hint)
 }
 
 async function submitCode() {
@@ -192,6 +195,50 @@ function formatPythonError(errorMessage) {
 
   // Fallback - just return the last line
   return lines[lines.length - 1].trim();
+}
+
+function speakHint(text) {
+  text = text.replace(/[#*`]/g, '');
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.rate = 0.9;
+  utterance.pitch = 1;
+  window.speechSynthesis.speak(utterance);
+}
+
+// Initialize all mini editors on the page
+document.querySelectorAll('.mini-editor').forEach(textarea => {
+  const cm = CodeMirror.fromTextArea(textarea, {
+    mode: 'python',
+    theme: 'dracula',
+    lineNumbers: true,
+    indentUnit: 4,
+  });
+  window.miniEditors.push(cm);
+});
+
+async function runMiniEditor(button) {
+  const container = button.parentElement;
+  const cm = container.querySelector('.CodeMirror').CodeMirror;
+  const output = container.querySelector('.mini-output');
+  const code = cm.getValue();
+
+  output.textContent = 'Running...';
+
+  try {
+    await pyodide.runPythonAsync(`
+import sys, io
+sys.stdout = io.StringIO()
+`);
+    await pyodide.runPythonAsync(code);
+    const result = await pyodide.runPythonAsync(`
+out = sys.stdout.getvalue()
+sys.stdout = sys.__stdout__
+out
+`);
+    output.textContent = result || '(no output)';
+  } catch (e) {
+    output.textContent = formatPythonError(e.message);
+  }
 }
 
 // async function verifyCode(code, checks) {

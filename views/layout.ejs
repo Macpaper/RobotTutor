@@ -10,7 +10,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <script>hljs.highlightAll();</script>
 </head>
-<body>
+<body class="light-mode">
   <nav class="nav-bar">
     <div class="logo">Robot Tutor</div>
     <div class="nav-links">
@@ -24,10 +24,18 @@
             <a href="/logout">Logout</a>
         <% } %>
     </div>
+    <label for="theme-toggle-button" class="theme-toggle-label">
+      <input type="checkbox" role="button" id="theme-toggle-button">
+      <span class="theme-toggle-slider"></span>
+    </label>
+
   </nav>
 
-  <%- body %>   <!-- each page's unique content goes here -->
+  <main class="main-content">
+    <%- body %>
+  </main>
 
   <footer>Robot Tutor</footer>
+  <script src="/javascripts/bodyScript.js"></script>
 </body>
 </html>
