@@ -1,0 +1,98 @@
+.exercise-runner {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px 16px;
+}
+
+.exercise-runner__dots {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.exercise-runner__dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #d3d1c7;
+}
+.exercise-runner__dot--complete {
+  background: #0f6e56;
+}
+.exercise-runner__dot--current {
+  background: #f2a623;
+}
+
+.exercise-runner__title {
+  font-size: 20px;
+  margin-bottom: 12px;
+}
+
+.exercise-runner__description {
+  font-size: 15px;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+.exercise-runner__description pre {
+  background: #1e1e1e;
+  color: #d4d4d4;
+  padding: 12px;
+  border-radius: 6px;
+  overflow-x: auto;
+}
+.exercise-runner__description code {
+  font-family: monospace;
+}
+
+.exercise-runner__editor {
+  border: 1px solid #d3d1c7;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.exercise-runner__check-btn {
+  padding: 8px 20px;
+  background: #0f6e56;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 15px;
+  cursor: pointer;
+}
+.exercise-runner__check-btn:hover {
+  background: #085041;
+}
+
+.exercise-runner__status {
+  text-align: center;
+  padding: 40px;
+}
+
+.exercise-runner__actions {
+  display: flex;
+  gap: 10px;
+}
+ 
+.exercise-runner__hint-btn {
+  padding: 8px 16px;
+  background: transparent;
+  color: #0f6e56;
+  border: 1px solid #0f6e56;
+  border-radius: 6px;
+  font-size: 15px;
+  cursor: pointer;
+}
+.exercise-runner__hint-btn:hover {
+  background: rgba(15, 110, 86, 0.08);
+}
+ 
+.exercise-runner__hint {
+  margin-top: 14px;
+  padding: 12px 14px;
+  background: #f5f4ee;
+  border-left: 3px solid #f2a623;
+  border-radius: 4px;
+  font-size: 14px;
+  line-height: 1.6;
+}

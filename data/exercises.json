@@ -1,0 +1,35 @@
+{
+    "sets": [
+        {
+        "id": "js-refresher-1",
+        "title": "Functions refresher",
+        "exerciseIds": ["func-basic-1", "func-basic-2", "func-basic-3"]
+        }
+    ],
+    "exercises": [
+        {
+            "id": "func-basic-1",
+            "concept": "functions",
+            "title": "Write your first function",
+            "difficulty": 1,
+            "description": "Write a function named `greeting`. In the function, it should print \"Hello!\". Call this function.",
+            "starterCode": "// write your function here\n"
+        },
+        {
+            "id": "func-basic-2",
+            "concept": "functions",
+            "title": "Add a parameter",
+            "difficulty": 1,
+            "description": "Write a function named `greetPerson`. Add a parameter to it called `name`. In the function, it should print \"Greetings, \" + name. Call this function with your name as input.",
+            "starterCode": "// write your function here\n"
+        },
+        {
+            "id": "func-basic-3",
+            "concept": "functions",
+            "title": "Return a value",
+            "difficulty": 1,
+            "description": "Write a function named `double`. Add a parameter called `number`. In the function, it should *return* number * 2.\n\nFor example:\n```js\nconsole.log(double(5));\n```\nThis should print `10` to the console.",
+            "starterCode": "// write your function here\n"
+        }
+    ]
+}

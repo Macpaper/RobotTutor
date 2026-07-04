@@ -1,4 +1,9 @@
 import { createRoot } from 'react-dom/client';
-import App from './App.jsx';
+import ExerciseRunner from './ExerciseRunner.jsx';
 
-createRoot(document.getElementById('root')).render(<App />);
+const exerciseRoot = document.getElementById('exercise-runner-root');
+if (exerciseRoot) {
+  createRoot(exerciseRoot).render(
+    <ExerciseRunner setId={exerciseRoot.dataset.setId} />
+  );
+}

@@ -17,13 +17,13 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 // View engine
 app.set('view engine', 'ejs');
-app.set('views', './views')
+app.set('views', './views');
 app.use(ejsLayouts);
 app.set('layout', 'layout');
 
 // Middleware
 app.use(express.static('public'));
-app.use('/scripts', express.static('scripts'));
+// app.use('/scripts', express.static('scripts'));
 app.use('/node_modules', express.static(path.join(__dirname, 'node_modules')));
 app.use(express.json());
 
@@ -34,6 +34,15 @@ app.use(session({
     resave: false,
     saveUninitialized: false
 }));
+
+const lessons1 = [
+  { id: 1, title: 'Intro',     status: 'complete' },
+  { id: 2, title: 'Loops',     status: 'complete' },
+  { id: 3, title: 'Functions', status: 'current'  },
+  { id: 4, title: 'Lists',     status: 'locked'   },
+  { id: 5, title: 'Dicts',     status: 'locked'   },
+  { id: 6, title: 'OOP',       status: 'locked'   },
+];
 
 function requireLogin(req, res, next) {
   if (!req.session.studentId) return res.redirect('/login');
@@ -56,6 +65,8 @@ app.get('/', (req, res) => {
     res.redirect('/login');
 });
 
+app.use(require('./routes/exercises'));
+
 app.get('/lessons', requireLogin, (req, res) => {
     res.render('lessons', { title: 'Lessons' });
 })
@@ -75,7 +86,7 @@ app.get('/login', (req, res) => {
 });
 
 app.get('/home', requireLogin, (req, res) => {
-    res.render('home', { title: 'Home', username: req.session.username });
+    res.render('home', { lessons1, title: 'Home', username: req.session.username });
 });
 
 app.post('/login', (req, res) => {
@@ -114,32 +125,32 @@ app.get('/dashboard', requireTeacher, (req, res) => {
   res.render('dashboard', { title: 'Dashboard', students, submissions });
 });
 
-app.get('/exercises', requireLogin, (req, res) => {
-    const exercises = db.prepare('SELECT * FROM exercises').all();
-    res.render('exercises', {title: 'Exercises', exercises});
-});
+// app.get('/exercises', requireLogin, (req, res) => {
+//     const exercises = db.prepare('SELECT * FROM exercises').all();
+//     res.render('exercises', {title: 'Exercises', exercises});
+// });
 
-app.get('/exercises/:id', requireLogin, (req, res) => {
-  const exercise = db.prepare('SELECT * FROM exercises WHERE id = ?').get(req.params.id);
-  if (!exercise) return res.status(404).send('Exercise not found');
-  res.render('editor', { title: exercise.title, exercise });
-});
+// app.get('/exercises/:id', requireLogin, (req, res) => {
+//   const exercise = db.prepare('SELECT * FROM exercises WHERE id = ?').get(req.params.id);
+//   if (!exercise) return res.status(404).send('Exercise not found');
+//   res.render('editor', { title: exercise.title, exercise });
+// });
 
-app.post('/submit/:exerciseId', requireLogin, (req, res) => {
-  const { code } = req.body;
-  const exercise = db.prepare('SELECT * FROM exercises WHERE id = ?').get(req.params.exerciseId);
-  if (!exercise) return res.status(404).json({ error: 'Exercise not found' });
+// app.post('/submit/:exerciseId', requireLogin, (req, res) => {
+//   const { code } = req.body;
+//   const exercise = db.prepare('SELECT * FROM exercises WHERE id = ?').get(req.params.exerciseId);
+//   if (!exercise) return res.status(404).json({ error: 'Exercise not found' });
 
-  // Placeholder — you'll add real checks here later
-  const passed = false;
+//   // Placeholder — you'll add real checks here later
+//   const passed = false;
 
-  db.prepare(`
-    INSERT INTO submissions (student_id, exercise_id, code, passed)
-    VALUES (?, ?, ?, ?)
-  `).run(req.session.studentId, exercise.id, code, passed ? 1 : 0);
+//   db.prepare(`
+//     INSERT INTO submissions (student_id, exercise_id, code, passed)
+//     VALUES (?, ?, ?, ?)
+//   `).run(req.session.studentId, exercise.id, code, passed ? 1 : 0);
 
-  res.json({ passed, feedback: 'Submitted!' });
-});
+//   res.json({ passed, feedback: 'Submitted!' });
+// });
 
 app.post('/hint', requireLogin, async (req, res) => {
     const { code, exerciseDescription } = req.body;

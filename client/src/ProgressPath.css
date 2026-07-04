@@ -1,0 +1,122 @@
+.progress-path {
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.progress-path__svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+/* Dashed circuit trace connecting nodes */
+.progress-path__trace {
+  stroke: #b9c2d6;
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-dasharray: 2 16;
+}
+body.dark-mode .progress-path__trace {
+  stroke: #3a3f52;
+}
+
+.progress-node {
+  cursor: pointer;
+  outline: none;
+}
+.progress-node[aria-disabled='true'] {
+  cursor: not-allowed;
+}
+
+.progress-node__hex {
+  stroke-width: 3;
+  transition: transform 0.15s ease;
+  transform-origin: center;
+}
+.progress-node:hover .progress-node__hex,
+.progress-node:focus-visible .progress-node__hex {
+  transform: scale(1.08);
+}
+
+/* Locked state — dim, inert */
+.progress-node--locked .progress-node__hex {
+  fill: #e2e5ee;
+  stroke: #c3c8d9;
+}
+body.dark-mode .progress-node--locked .progress-node__hex {
+  fill: #262b3d;
+  stroke: #3a3f52;
+}
+.progress-node--locked .progress-node__label {
+  fill: #9aa1b5;
+}
+
+/* Completed state */
+.progress-node--complete .progress-node__hex {
+  fill: #0f6e56;
+  stroke: #0a4d3d;
+}
+.progress-node__check {
+  stroke: white;
+}
+
+/* Current state — the "powered on" chip */
+.progress-node--current .progress-node__hex {
+  fill: #f2a623;
+  stroke: #c47f0d;
+}
+
+.progress-node__num {
+  font-size: 20px;
+  font-weight: 700;
+  fill: white;
+}
+
+.progress-node__label {
+  font-size: 13px;
+  font-weight: 600;
+  fill: #3d3d3a;
+}
+body.dark-mode .progress-node__label {
+  fill: #d7dae3;
+}
+
+.progress-node__lock rect,
+.progress-node__lock path {
+  stroke: #8891a8;
+  fill: none;
+}
+.progress-node__lock rect {
+  fill: #8891a8;
+}
+
+/* Pulsing glow ring around the current lesson */
+.progress-node__pulse {
+  fill: none;
+  stroke: #f2a623;
+  stroke-width: 3;
+  opacity: 0.6;
+  animation: pulse-ring 1.8s ease-out infinite;
+  transform-origin: center;
+}
+@keyframes pulse-ring {
+  0% {
+    r: 30;
+    opacity: 0.7;
+  }
+  100% {
+    r: 48;
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progress-node__pulse {
+    animation: none;
+    opacity: 0.3;
+  }
+  .progress-node__hex {
+    transition: none;
+  }
+}

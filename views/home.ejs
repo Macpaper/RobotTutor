@@ -2,8 +2,9 @@
 <h1>Welcome to your Dashboard, <%= username %>!</h1>
 <p>Here you can see your progress, access your lessons, and continue your coding journey.</p>
 
-<div id="react-home-widget"></div>
+<!-- <div id="react-home-widget"></div> -->
 <div id="root"></div>
+ <div id="progress-path-root" data-lessons='<%- JSON.stringify(lessons1) %>'></div>
 <script type="module" src="/build/main.js"></script>
 
 <!-- <script type="module" src="/javascripts/reactHomeWidget.js"></script> -->
