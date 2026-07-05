@@ -11,7 +11,7 @@ const { GoogleGenAI } = require('@google/genai');
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
-const { router: authRouter, requireLigin, requireTeacher } = require('./routes/auth');
+const { router: authRouter, requireLogin, requireTeacher } = require('./routes/auth');
 
 // View engine
 app.set('view engine', 'ejs');
