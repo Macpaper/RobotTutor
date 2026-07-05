@@ -18,6 +18,8 @@ export default function ExerciseRunner({ setId }) {
   const [loading, setLoading] = useState(true);
   const [checking, setChecking] = useState(false);
   const [hint, setHint] = useState(null);
+  const [conceptExplanation, setConceptExplanation] = useState(null);
+  const [conceptLoading, setConceptLoading] = useState(false);
   const [hintLoading, setHintLoading] = useState(false);
   const [consoleOutput, setConsoleOutput] = useState([]);
   const [running, setRunning] = useState(false);
@@ -45,6 +47,40 @@ export default function ExerciseRunner({ setId }) {
         setLoading(false);
       });
   }, [setId]);
+
+  // useEffect(() => {
+  //   if (!exercises[index]?.id) return;
+
+  //   let cancelled = false;
+
+  //   async function loadConcept() {
+  //     setConceptLoading(true);
+  //     setConceptExplanation(null);
+  //     try {
+  //       const res = await fetch(`/api/exercises/${exercises[index].id}/explain-concept`, {
+  //         method: 'POST',
+  //         headers: { 'Content-Type': 'application/json' },
+  //       });
+  //       const { explanation } = await res.json();
+  //       if (!cancelled) {
+  //         setConceptExplanation(explanation);
+  //       }
+  //     } catch {
+  //       if (!cancelled) {
+  //         setConceptExplanation('Sorry, something went wrong explaining this concept.');
+  //       }
+  //     } finally {
+  //       if (!cancelled) {
+  //         setConceptLoading(false);
+  //       }
+  //     }
+  //   }
+
+  //   loadConcept();
+  //   return () => {
+  //     cancelled = true;
+  //   };
+  // }, [exercises, index]);
 
   if (loading) return <p className="exercise-runner__status">Loading...</p>;
   if (!set) return <p className="exercise-runner__status">Set not found.</p>;
@@ -137,82 +173,123 @@ export default function ExerciseRunner({ setId }) {
     }
   }
 
+  async function handleExplainConcept() {
+    setConceptLoading(true);
+    setConceptExplanation(null);
+    try {
+      const res = await fetch(`/api/exercises/${exercise.id}/explain-concept`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const { explanation } = await res.json();
+      setConceptExplanation(explanation);
+    } catch {
+      setConceptExplanation('Sorry, something went wrong explaining this concept.');
+    } finally {
+      setConceptLoading(false);
+    }
+  }
+
   return (
-    <div className="exercise-runner">
-      <div className="exercise-runner__dots">
-        {exercises.map((ex, i) => {
-          const status = passed.includes(ex.id) ? 'complete' : i === index ? 'current' : 'upcoming';
-          const isPulsing = justCompleted === ex.id;
-          return (
-            <span
-              key={ex.id}
-              className={`exercise-runner__dot exercise-runner__dot--${status} ${isPulsing ? 'exercise-runner__dot--pulse' : ''}`}
-            />
-          );
-        })}
-      </div>
+    <div className="exercise-runner-layout">
 
-      <h1 className="exercise-runner__title">{exercise.title}</h1>
+      {/* LEFT SIDEBAR — empty for now, ready for concept drawer / other-exercises list */}
+      <aside className="exercise-runner__left-panel">
+        {/* future: concept prerequisite buttons, exercise set navigation, etc. */}
+      </aside>
 
-      <div
-        className="exercise-runner__description"
-        dangerouslySetInnerHTML={{ __html: marked.parse(exercise.description) }}
-      />
-
-      <div className="exercise-runner__editor">
-        <Editor
-          height="240px"
-          language="javascript"
-          theme={isLightMode ? 'vs' : "vs-dark"}
-          value={code}
-          onChange={(value) => setCode(value ?? '')}
-          options={{
-            minimap: { enabled: false },
-            fontSize: 14,
-            automaticLayout: true,
-          }}
-        />
-      </div>
-
-      <div className="exercise-runner__actions">
-        <button className="exercise-runner__run-btn" onClick={handleRun} disabled={running}>
-          {running ? 'Running...' : '▶ Run'}
-        </button>
-        <button className="exercise-runner__check-btn" onClick={handleCheck} disabled={checking}>
-          { checking ? 'Checking...' : 'Check' }
-        </button>
-        <button className="exercise-runner__hint-btn" onClick={handleGetHint} disabled={hintLoading}>
-          {hintLoading ? 'Thinking...' : '💡 Get a Hint'}
-        </button>
-      </div>
-
-      {statusMessage && (
-        <div className={`exercise-runner__status-msg exercise-runner__status-msg--${statusMessage.type}`}>
-          {statusMessage.text}
+      {/* MAIN COLUMN — unchanged from what you have now */}
+      <div className="exercise-runner">
+        <div className="exercise-runner__dots">
+          {exercises.map((ex, i) => {
+            const status = passed.includes(ex.id) ? 'complete' : i === index ? 'current' : 'upcoming';
+            const isPulsing = justCompleted === ex.id;
+            return (
+              <span
+                key={ex.id}
+                className={`exercise-runner__dot exercise-runner__dot--${status} ${isPulsing ? 'exercise-runner__dot--pulse' : ''}`}
+              />
+            );
+          })}
         </div>
-      )}
 
-      <div className="exercise-runner__console">
-        <div className="exercise-runner__console-header">Console</div>
-        {consoleOutput.length === 0 ? (
-          <p className="exercise-runner__console-empty">No output yet — hit Check to run your code.</p>
-        ) : (
-          consoleOutput.map((line, i) => (
-            <div key={i} className="exercise-runner__console-line">{line}</div>
-          ))
+        <h1 className="exercise-runner__title">{exercise.title}</h1>
+
+        <div
+          className="exercise-runner__description"
+          dangerouslySetInnerHTML={{ __html: marked.parse(exercise.description) }}
+        />
+
+        <div className="exercise-runner__editor">
+          <Editor
+            height="240px"
+            language="javascript"
+            theme={isLightMode ? 'vs' : 'vs-dark'}
+            value={code}
+            onChange={(value) => setCode(value ?? '')}
+            options={{ minimap: { enabled: false }, fontSize: 14, automaticLayout: true }}
+          />
+        </div>
+
+        <div className="exercise-runner__actions">
+          <button className="exercise-runner__run-btn" onClick={handleRun} disabled={running}>
+            {running ? 'Running...' : '▶ Run'}
+          </button>
+          <button className="exercise-runner__check-btn" onClick={handleCheck} disabled={checking}>
+            {checking ? 'Checking...' : 'Check'}
+          </button>
+          <button className="exercise-runner__hint-btn" onClick={handleGetHint} disabled={hintLoading}>
+            {hintLoading ? 'Thinking...' : '💡 Get a Hint'}
+          </button>
+          <button className="exercise-runner__concept-btn" onClick={handleExplainConcept} disabled={conceptLoading}>
+            {conceptLoading ? 'Explaining...' : '📖 Explain Concept'}
+          </button>
+        </div>
+
+        {statusMessage && (
+          <div className={`exercise-runner__status-msg exercise-runner__status-msg--${statusMessage.type}`}>
+            {statusMessage.text}
+          </div>
+        )}
+
+        <div className="exercise-runner__console">
+          <div className="exercise-runner__console-header">Console</div>
+          {consoleOutput.length === 0 ? (
+            <p className="exercise-runner__console-empty">No output yet — hit Check to run your code.</p>
+          ) : (
+            consoleOutput.map((line, i) => (
+              <div key={i} className="exercise-runner__console-line">{line}</div>
+            ))
+          )}
+        </div>
+
+        {hint && (
+          <div
+            className="exercise-runner__hint"
+            dangerouslySetInnerHTML={{ __html: marked.parse(hint) }}
+          />
         )}
       </div>
 
-      {hint && (
-        <div
-          className="exercise-runner__hint"
-          dangerouslySetInnerHTML={{ __html: marked.parse(hint) }}
-        />
+      {/* RIGHT SIDEBAR — the concept-explanation panel from before */}
+      {conceptExplanation && (
+        <aside className="exercise-runner__concept-panel">
+          <div className="exercise-runner__concept-panel-header">
+            <span>📖 Concept: {exercise.concept}</span>
+            <button
+              className="exercise-runner__concept-panel-close"
+              onClick={() => setConceptExplanation(null)}
+              aria-label="Close"
+            >
+              ✕
+            </button>
+          </div>
+          <div
+            className="exercise-runner__concept-panel-body"
+            dangerouslySetInnerHTML={{ __html: marked.parse(conceptExplanation) }}
+          />
+        </aside>
       )}
-
-      {/* <button className="exercise-runner__check-btn" onClick={handleCheck} disabled={checking}>
-        {checking ? 'Checking...' : 'Check'}
-      </button> */}
     </div>
   );
 }

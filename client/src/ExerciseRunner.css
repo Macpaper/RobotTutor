@@ -1,9 +1,88 @@
 
 
-.exercise-runner {
-  max-width: 720px;
+.exercise-runner-layout {
+  display: flex;
+  gap: 24px;
+  max-width: 1400px;
   margin: 0 auto;
+  align-items: flex-start;
   padding: 24px 16px;
+}
+
+.exercise-runner__left-panel {
+  width: 240px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 24px;
+}
+
+.exercise-runner {
+  flex: 1;
+  min-width: 0;
+  max-width: 720px;
+  margin: 0;
+  padding: 0;
+}
+
+.exercise-runner__concept-btn {
+  padding: 8px 16px;
+  background: transparent;
+  color: #7f7a9d;
+  border: 1px solid #7f7a9d;
+  border-radius: 6px;
+  font-size: 15px;
+  cursor: pointer;
+}
+.exercise-runner__concept-btn:hover {
+  background: rgba(127, 122, 157, 0.08);
+}
+
+
+.exercise-runner__concept-panel {
+  width: 320px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 24px;
+  background: #f7f5eb;
+  border: 1px solid #d3d1c7;
+  border-radius: 8px;
+  padding: 14px;
+  box-sizing: border-box;
+}
+
+.exercise-runner__concept-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.exercise-runner__concept-panel-close {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.exercise-runner__concept-panel-body {
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.exercise-runner__concept-panel-body pre {
+  background: #1e1e1e;
+  color: #d4d4d4;
+  padding: 10px;
+  border-radius: 6px;
+  overflow-x: auto;
+}
+
+body.dark-mode .exercise-runner__concept-panel {
+  background: #2a2a35;
+  border-color: #444;
+  color: var(--text-color-dark);
 }
 
 .exercise-runner__dots {

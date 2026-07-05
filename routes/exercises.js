@@ -82,6 +82,38 @@ router.post('/api/exercises/:exerciseId/check', requireLogin, (req, res) => {
   });
 });
 
+router.post('/api/exercises/:exerciseId/explain-concept', requireLogin, async (req, res) => {
+  const exercise = exerciseData.exercises.find((ex) => ex.id === req.params.exerciseId);
+  if (!exercise) {
+    return res.status(404).json({ error: 'Exercise not found' });
+  }
+
+  try {
+    const response = await ai.models.generateContent({
+      model: 'gemini-3.5-flash',
+      contents: `
+        You are a friendly JavaScript tutor helping a beginner student understand
+        the CONCEPT behind an exercise, not the specific solution.
+
+        The exercise is: "${exercise.description}"
+        The concept it's teaching is: "${exercise.concept}"
+
+        Explain the underlying concept (${exercise.concept}) in a clear, beginner-friendly
+        way — as if teaching it for the first time, not as a hint about this specific
+        exercise. Use a simple example unrelated to this exercise's specific solution.
+        - Keep it to 4-6 sentences.
+        - Use markdown formatting.
+        - Give concrete examples of each explanation (just don't use the same variable/function names from the exercise)
+        - Do NOT give away the answer to this specific exercise.
+      `,
+    });
+    res.json({ explanation: response.text });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to generate explanation' });
+  }
+});
+
 // Generates a hint for one exercise, using JS-specific framing in the prompt.
 router.post('/api/exercises/:exerciseId/hint', requireLogin, async (req, res) => {
   const { code } = req.body;
