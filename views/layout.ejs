@@ -10,6 +10,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <script>hljs.highlightAll();</script>
+<% if (typeof extraHead !== 'undefined') { %>
+  <%- extraHead %>
+<% } %>
 </head>
 <body class="light-mode">
   <nav class="nav-bar">
@@ -34,6 +37,9 @@
 
   <main class="main-content">
     <%- body %>
+    <% if (typeof extraScripts !== 'undefined') { %>
+      <%- extraScripts %>
+    <% } %>
   </main>
 
   <footer>Robot Tutor</footer>

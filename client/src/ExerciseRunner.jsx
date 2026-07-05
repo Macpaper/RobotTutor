@@ -18,6 +18,20 @@ export default function ExerciseRunner({ setId }) {
   const [checking, setChecking] = useState(false);
   const [hint, setHint] = useState(null);
   const [hintLoading, setHintLoading] = useState(false);
+  const [consoleOutput, setConsoleOutput] = useState([]);
+  const [running, setRunning] = useState(false);
+  const [statusMessage, setStatusMessage] = useState(null); // { type: 'success' | 'error' | 'info', text }
+  const [isLightMode, setIsLightMode] = useState(() =>
+    document.body.classList.contains('light-mode')
+  );
+
+  useEffect(() => {
+    function handleThemeChange(e) {
+      setIsLightMode(e.detail.isLight);
+    }
+    window.addEventListener('themechange', handleThemeChange);
+    return () => window.removeEventListener('themechange', handleThemeChange);
+  }, []);
 
   useEffect(() => {
     fetch(`/api/exercise-sets/${setId}`)
@@ -36,15 +50,34 @@ export default function ExerciseRunner({ setId }) {
   const exercise = exercises[index];
   const isLast = index === exercises.length - 1;
 
+  async function handleRun() {
+    setRunning(true);
+    try {
+      const res = await fetch(`/api/exercises/${exercise.id}/run`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, setId }),
+      });
+      const { consoleOutput: output, error } = await res.json();
+      setConsoleOutput(error ? [`Error: ${error}`] : (output || []));
+    } catch {
+      setConsoleOutput(['Something went wrong running your code.']);
+    } finally {
+      setRunning(false);
+    }
+  }
+
   async function handleCheck() {
     setChecking(true);
+    setStatusMessage(null);
     try {
       const res = await fetch(`/api/exercises/${exercise.id}/check`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code }),
+        body: JSON.stringify({ code, setId }),
       });
-      const { passed: isCorrect, error, feedback } = await res.json();
+      const { passed: isCorrect, error, feedback, consoleOutput: output } = await res.json();
+      setConsoleOutput(output || []);
 
       if (error) {
         alert(`Error in your code:\n${error}`);
@@ -52,18 +85,22 @@ export default function ExerciseRunner({ setId }) {
       }
 
       if (isCorrect) {
-        alert('Correct! 🎉');
         setPassed((prev) => [...prev, exercise.id]);
         if (!isLast) {
+          setStatusMessage({ type: 'success', text: 'Correct! 🎉 Moving to the next exercise...'})
           const next = index + 1;
-          setIndex(next);
-          setCode(exercises[next].starterCode || '');
-          setHint(null);
+          setTimeout(() => {
+            setIndex(next);
+            setCode(exercises[next].starterCode || '');
+            setHint(null);
+            setConsoleOutput([]);
+            setStatusMessage(null);
+          }, 1200);
         } else {
-          alert('Set complete!');
+          setStatusMessage({ type: 'success', text: '🎉 Set complete! Great work.' })
         }
       } else {
-        alert(feedback || 'Not quite — try again.');
+        setStatusMessage({ type: 'error', text: feedback || 'Not quite — try again.' });
       }
     } finally {
       setChecking(false);
@@ -111,7 +148,7 @@ export default function ExerciseRunner({ setId }) {
         <Editor
           height="240px"
           language="javascript"
-          theme="vs-dark"
+          theme={isLightMode ? 'vs' : "vs-dark"}
           value={code}
           onChange={(value) => setCode(value ?? '')}
           options={{
@@ -123,12 +160,32 @@ export default function ExerciseRunner({ setId }) {
       </div>
 
       <div className="exercise-runner__actions">
+        <button className="exercise-runner__run-btn" onClick={handleRun} disabled={running}>
+          {running ? 'Running...' : '▶ Run'}
+        </button>
         <button className="exercise-runner__check-btn" onClick={handleCheck} disabled={checking}>
           { checking ? 'Checking...' : 'Check' }
         </button>
         <button className="exercise-runner__hint-btn" onClick={handleGetHint} disabled={hintLoading}>
           {hintLoading ? 'Thinking...' : '💡 Get a Hint'}
         </button>
+      </div>
+
+      {statusMessage && (
+        <div className={`exercise-runner__status-msg exercise-runner__status-msg--${statusMessage.type}`}>
+          {statusMessage.text}
+        </div>
+      )}
+
+      <div className="exercise-runner__console">
+        <div className="exercise-runner__console-header">Console</div>
+        {consoleOutput.length === 0 ? (
+          <p className="exercise-runner__console-empty">No output yet — hit Check to run your code.</p>
+        ) : (
+          consoleOutput.map((line, i) => (
+            <div key={i} className="exercise-runner__console-line">{line}</div>
+          ))
+        )}
       </div>
 
       {hint && (

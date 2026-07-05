@@ -52,7 +52,16 @@ body.light-mode h4,
 body.light-mode h5,
 body.light-mode h6 {
   color: var(--text-color);
+  /* background: var(--code-background-color-light); */
 }
+
+body.light-mode #editor,
+body.light-mode .code-block,
+body.light-mode textarea.code-block {
+  color: var(--text-color);
+  background: var(--code-background-color-light);
+}
+
 
 body.dark-mode p,
 body.dark-mode a,
@@ -64,6 +73,14 @@ body.dark-mode h4,
 body.dark-mode h5,
 body.dark-mode h6 {
   color: var(--text-color-dark);
+  /* background: var(--code-background-color-dark); */
+}
+
+body.dark-mode #editor,
+body.dark-mode .code-block,
+body.dark-mode textarea.code-block {
+  color: var(--text-color-dark);
+  background: var(--code-background-color-dark);
 }
 
 body.light-mode {

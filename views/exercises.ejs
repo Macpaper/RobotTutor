@@ -1,0 +1,10 @@
+<h1>Exercise Sets</h1>
+
+<div class="exercise-set-list">
+    <% sets.forEach(function(set) { %>
+        <a href="/exercises/<%= set.id %>" class="exercise-set-card">
+            <span class="exercise-set-card__title"><%= set.title %></span>
+            <span class="exercise-set-card__count"><%= set.exerciseIds.length %> exercises</span>
+        </a>
+    <% }); %>
+</div>

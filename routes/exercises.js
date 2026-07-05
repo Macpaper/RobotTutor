@@ -17,13 +17,21 @@ function getSessionKey(req) {
   return req.session.studentId || req.sessionID;
 }
 
+router.get('/exercises', requireLogin, (req, res) => {
+  res.render('exercises', { 
+    title: "All Exercises",
+    sets: exerciseData.sets, 
+    extraHead: '<link rel="stylesheet" href="css/exercises.css">',
+  });
+});
+
 // Page route — renders the mount point, setId comes from the URL.
-router.get('/exercises/:setId', (req, res) => {
-  res.render('exercisePage', { title: "Exercises", setId: req.params.setId });
+router.get('/exercises/:setId', requireLogin, (req, res) => {
+  res.render('exercisePage', { title: "Exercise", setId: req.params.setId });
 });
 
 // Returns just the exercises for one set (not the whole exercises.json).
-router.get('/api/exercise-sets/:setId', (req, res) => {
+router.get('/api/exercise-sets/:setId', requireLogin, (req, res) => {
   const set = exerciseData.sets.find((s) => s.id === req.params.setId);
   if (!set) return res.status(404).json({ error: 'Set not found' });
 
@@ -34,10 +42,35 @@ router.get('/api/exercise-sets/:setId', (req, res) => {
   res.json({ set, exercises });
 });
 
+router.post('/api/exercises/:exerciseId/run', requireLogin, (req, res) => {
+  const { code, setId } = req.body;
+  const exercise = exerciseData.exercises.find((ex) => ex.id === req.params.exerciseId);
+  if (!exercise) {
+    return res.status(404).json({ error: 'Exercise not found' });
+  }
+
+  const key = `${getSessionKey(req)}:${setId}`;
+  const history = setProgress.get(key) || [];
+
+  const BOUNDARY = '__EXERCISE_BOUNDARY__';
+  const combinedCode = [
+    ...history.map((h) => h.code),
+    `console.log(${JSON.stringify(BOUNDARY)});`,
+    code,
+  ].join('\n');
+
+  const { output, error } = runCode(combinedCode);
+
+  const boundaryIndex = output.lastIndexOf(BOUNDARY);
+  const currentOutput = boundaryIndex === -1 ? output : output.slice(boundaryIndex + 1);
+
+  res.json({ consoleOutput: currentOutput, error: error || null });
+});
+
 // Grades a single exercise submission. No persistence yet — just runs the
 // code server-side and returns pass/fail. Wire this into a students/progress
 // table later without touching anything above.
-router.post('/api/exercises/:exerciseId/check', (req, res) => {
+router.post('/api/exercises/:exerciseId/check', requireLogin, (req, res) => {
   const { code, setId } = req.body;
   const studentId = req.session.studentId;
   const exercise = exerciseData.exercises.find((ex) => ex.id === req.params.exerciseId);
@@ -83,11 +116,12 @@ router.post('/api/exercises/:exerciseId/check', (req, res) => {
     passed,
     error,
     feedback: error ? `Error: ${error}` : passed ? 'Correct!' : 'Not quite — try again.',
+    consoleOutput: currentOutput,
   });
 });
 
 // Generates a hint for one exercise, using JS-specific framing in the prompt.
-router.post('/api/exercises/:exerciseId/hint', async (req, res) => {
+router.post('/api/exercises/:exerciseId/hint', requireLogin, async (req, res) => {
   const { code } = req.body;
   const exercise = exerciseData.exercises.find((ex) => ex.id === req.params.exerciseId);
   if (!exercise) {

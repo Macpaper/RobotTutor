@@ -28,6 +28,7 @@ if (isLightTheme) {
     updateThemeButton(false);
 }
 applyThemeToEditors(isLightTheme);
+    window.dispatchEvent(new CustomEvent('themechange', { detail: { isLightTheme } }));
 
 function toggleTheme() {
     const isLight = !document.body.classList.contains('light-mode');
@@ -36,6 +37,8 @@ function toggleTheme() {
     localStorage.setItem('theme', isLight ? 'light' : 'dark');
     updateThemeButton(isLight);
     applyThemeToEditors(isLight);
+
+    window.dispatchEvent(new CustomEvent('themechange', { detail: { isLight } }));
 }
 
 function updateThemeButton(isLight) {
