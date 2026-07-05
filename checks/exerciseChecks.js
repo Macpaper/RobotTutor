@@ -37,7 +37,7 @@ const exerciseChecks = {
 
   'func-basic-3': (code, consoleOutput, runInSandbox) => {
     try {
-      const double = runInSandbox(`${code}\ndouble;`);
+      const double = runInSandbox('double');
       if (typeof double !== 'function') return false;
       return double(5) === 10 && double(0) === 0 && double(-3) === -6;
     } catch {

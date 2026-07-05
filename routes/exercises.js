@@ -96,7 +96,7 @@ router.post('/api/exercises/:exerciseId/check', requireLogin, (req, res) => {
   let passed = false;
   if (!error) {
     const checkFn = exerciseChecks[exercise.id];
-    const runInSandbox = (snippet) => runInContext(`${combinedCode}\n${snippet}`, context);
+    const runInSandbox = (snippet) => runInContext(snippet, context);
     passed = checkFn ? checkFn(code, output, runInSandbox) : false;
   }
 
