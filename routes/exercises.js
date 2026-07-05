@@ -4,14 +4,22 @@ const { GoogleGenAI } = require('@google/genai');
 const exerciseData = require('../data/exercises.json'); // swap for a DB later if you want persistence
 const { runCode, runInContext } = require('../checks/runCode');
 const { exerciseChecks } = require('../checks/exerciseChecks');
+const { requireLogin } = require('./auth');
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 const router = express.Router();
+// Per-session progress within a set, so later exercises can see earlier
+// variables. In-memory only — resets on server restart, fine for a prototype.
+const setProgress = new Map(); // key: `${sessionKey}:${setId}` -> [{ exerciseId, code }]
+
+function getSessionKey(req) {
+  return req.session.studentId || req.sessionID;
+}
 
 // Page route — renders the mount point, setId comes from the URL.
 router.get('/exercises/:setId', (req, res) => {
-  res.render('exercisePage', { title: "hahaTeeHee", setId: req.params.setId });
+  res.render('exercisePage', { title: "Exercises", setId: req.params.setId });
 });
 
 // Returns just the exercises for one set (not the whole exercises.json).
@@ -30,24 +38,46 @@ router.get('/api/exercise-sets/:setId', (req, res) => {
 // code server-side and returns pass/fail. Wire this into a students/progress
 // table later without touching anything above.
 router.post('/api/exercises/:exerciseId/check', (req, res) => {
-  const { code } = req.body;
+  const { code, setId } = req.body;
   const studentId = req.session.studentId;
   const exercise = exerciseData.exercises.find((ex) => ex.id === req.params.exerciseId);
   if (!exercise) {
     return res.status(404).json({ error: 'Exercise not found' });
   }
-  const { output, error, context } = runCode(code);
+
+  const key = `${getSessionKey(req)}:${setId}`;
+  const history = setProgress.get(key) || [];
+
+  const BOUNDARY = '__EXERCISE_BOUNDARY__';
+  const combinedCode = [
+    ...history.map((h) => h.code),
+    `console.log(${JSON.stringify(BOUNDARY)});`,
+    code,
+  ].join('\n');
+
+  const { output, error, context } = runCode(combinedCode);
+
+  const boundaryIndex = output.lastIndexOf(BOUNDARY);
+  const currentOutput = boundaryIndex === -1 ? output : output.slice(boundaryIndex + 1);
 
   let passed = false;
   if (!error) {
     const checkFn = exerciseChecks[exercise.id];
-    const runInSandbox = (snippet) => runInContext(snippet, context);
+    const runInSandbox = (snippet) => runInContext(`${combinedCode}\n${snippet}`, context);
     passed = checkFn ? checkFn(code, output, runInSandbox) : false;
   }
 
-    // studentId is right here whenever you're ready to persist this —
-  // e.g. db.prepare('INSERT INTO submissions (student_id, exercise_id, code, passed) VALUES (?, ?, ?, ?)')
-  //        .run(studentId, exercise.id, code, passed ? 1 : 0);
+  if (passed) {
+    const updated = [
+      ...history.filter((h) => h.exerciseId !== exercise.id),
+      { exerciseId: exercise.id, code },
+    ];
+    setProgress.set(key, updated);
+  }
+
+    // studentId is right here whenever ready to persist this
+    // ex. db.prepare('INSERT INTO submissions (student_id, exercise_id, code, passed) VALUES (?, ?, ?, ?)')
+    //        .run(studentId, exercise.id, code, passed ? 1 : 0);
 
   res.json({
     passed,
@@ -63,7 +93,7 @@ router.post('/api/exercises/:exerciseId/hint', async (req, res) => {
   if (!exercise) {
     return res.status(404).json({ error: 'Exercise not found' });
   }
- 
+
   try {
     const response = await ai.models.generateContent({
       model: 'gemini-3.5-flash',

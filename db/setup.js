@@ -10,14 +10,6 @@ db.exec(`
     join_date TEXT DEFAULT CURRENT_TIMESTAMP
   );
 
-  CREATE TABLE IF NOT EXISTS exercises (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    title TEXT NOT NULL,
-    description TEXT NOT NULL,
-    starter_code TEXT,
-    checks TEXT NOT NULL
-  );
-
   CREATE TABLE IF NOT EXISTS submissions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     student_id INTEGER REFERENCES students(id),

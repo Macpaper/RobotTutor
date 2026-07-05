@@ -1,0 +1,21 @@
+1. ADD A CONCEPTS DRAWER ON THE LEFT OF THE EXERCISE SCREEN. Each exercise will have a 
+"prerequisite" concept - maybe we can have just a button for each one. If the user clicks on the button,
+a dropdown for the concept will appear on the left hand side of the page. At the end of the dropdown,
+link to the actual concept page (like a tutorial/book chapter they can read) if they want.
+Think about how to style this
+
+2. Add a "Explain Concept" button - instead of just a hint for the AI, add a button that explains the CONCEPTS
+of some exercise. Maybe feed the AI the exercise data for this? Including prerequisites and description?
+This can show up on the right hand side and keep the hint kind of separate. But I also want an output console...
+
+
+3. Add an output console below the code screen. This is probably just the best place to put it. Figure out how to style it
+
+4. Upload this to an actual website
+
+5. Make sure student login is fine and works. Then make sure you can just send the link to students -
+Make sure you can track which students completed which exercises. They should be able to:
+Create their own account
+Go to the exercise
+Complete each one
+Then on your end, be able to see all this data. 

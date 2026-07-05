@@ -25,6 +25,60 @@ const exerciseChecks = {
       return false;
     }
   },
+  'func-basic-4': (code, consoleOutput, runInSandbox) => {
+    try {
+      const getSquareArea = runInSandbox(`${code}\ngetRectangleArea;`);
+      if (typeof getSquareArea !== 'function') return false;
+
+      // Test correctness directly rather than relying on a specific console.log call —
+      // more robust than requiring the student to log a particular pair of numbers.
+      const cases = [
+        [4, 5], [10, 10], [3, 7], [1, 1],
+      ];
+      return cases.every(([w, h]) => getSquareArea(w, h) === w * h);
+    } catch {
+      return false;
+    }
+  },
+
+  'func-basic-5': (code, consoleOutput, runInSandbox) => {
+    try {
+      const maxOfThree = runInSandbox(`${code}\nmaxOfThree;`);
+      if (typeof maxOfThree !== 'function') return false;
+
+      const cases = [
+        [1, 2, 3], [10, 5, 2], [-1, -5, -2], [7, 7, 3], [0, 0, 0],
+      ];
+      return cases.every(([a, b, c]) => maxOfThree(a, b, c) === Math.max(a, b, c));
+    } catch {
+      return false;
+    }
+  },
+  'arr-basic-1': (code, consoleOutput, runInSandbox) => {
+    try {
+      const foods = runInSandbox(`${code}\nfoods;`);
+      return (
+        Array.isArray(foods) &&
+        foods.length >= 5 &&
+        foods.every((item) => typeof item === 'string')
+      );
+    } catch {
+      return false;
+    }
+  },
+
+  'arr-basic-2': (code, consoleOutput) => {
+    const hasLoop = /for\s*\(|\.forEach\s*\(|while\s*\(/.test(code);
+    const printedMultiple = consoleOutput.length >= 2;
+    return hasLoop && printedMultiple;
+  },
+
+  'arr-basic-3': (code, consoleOutput) => {
+    const hasFirstIndex = /\[\s*0\s*\]/.test(code);
+    const hasThirdIndex = /\[\s*2\s*\]/.test(code);
+    const printedTwice = consoleOutput.length >= 2;
+    return hasFirstIndex && hasThirdIndex && printedTwice;
+  },
 };
 
 module.exports = { exerciseChecks };

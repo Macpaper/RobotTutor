@@ -6,14 +6,12 @@ const path = require('path');
 const lessons = require('./data/lessons');
 
 const session = require('express-session');
-const bcrypt = require('bcrypt');
-const Database = require('better-sqlite3');
 const ejsLayouts = require('express-ejs-layouts');
-
 const { GoogleGenAI } = require('@google/genai');
-const db = new Database("./db/database.db");
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+
+const { router: authRouter, requireLigin, requireTeacher } = require('./routes/auth');
 
 // View engine
 app.set('view engine', 'ejs');
@@ -23,36 +21,16 @@ app.set('layout', 'layout');
 
 // Middleware
 app.use(express.static('public'));
-// app.use('/scripts', express.static('scripts'));
 app.use('/node_modules', express.static(path.join(__dirname, 'node_modules')));
 app.use(express.json());
-
 app.use(express.urlencoded({ extended: true })); 
+
 // not sure what this is either yet
 app.use(session({
-    secret: 'change-this-to-something-random',
+    secret: process.env.SESSION_SECRET || '75acf83c4d6309283c8363ca43b4f4886f7e8636b8772177d62cb0c3cffd5966',
     resave: false,
     saveUninitialized: false
 }));
-
-const lessons1 = [
-  { id: 1, title: 'Intro',     status: 'complete' },
-  { id: 2, title: 'Loops',     status: 'complete' },
-  { id: 3, title: 'Functions', status: 'current'  },
-  { id: 4, title: 'Lists',     status: 'locked'   },
-  { id: 5, title: 'Dicts',     status: 'locked'   },
-  { id: 6, title: 'OOP',       status: 'locked'   },
-];
-
-function requireLogin(req, res, next) {
-  if (!req.session.studentId) return res.redirect('/login');
-  next();
-}
-
-function requireTeacher(req, res, next) {
-  if (!req.session.isTeacher) return res.redirect('/login');
-  next();
-}
 
 app.use((req, res, next) => {
     res.locals.studentId = req.session.studentId || null;
@@ -61,10 +39,9 @@ app.use((req, res, next) => {
     next();
 });
 
-app.get('/', (req, res) => {
-    res.redirect('/login');
-});
+app.get('/', (req, res) => { res.redirect('/login'); });
 
+app.use(authRouter);
 app.use(require('./routes/exercises'));
 
 app.get('/lessons', requireLogin, (req, res) => {
@@ -74,83 +51,8 @@ app.get('/lessons', requireLogin, (req, res) => {
 app.get('/lessons/:id', requireLogin, (req, res) => {
     const lesson = lessons.find(l => l.id === parseInt(req.params.id));
     if (!lesson) return res.status(404).send('Lesson not found');
-
     res.render(`lessons/${req.params.id}`, { title: lesson.title });
 });
-
-app.get('/login', (req, res) => {
-    if (req.session.studentId) return res.redirect('/home');
-    if (req.session.isTeacher) return res.redirect('/dashboard');
-
-    res.render('login', { title: "Login", error: null });
-});
-
-app.get('/home', requireLogin, (req, res) => {
-    res.render('home', { lessons1, title: 'Home', username: req.session.username });
-});
-
-app.post('/login', (req, res) => {
-  const { username, password } = req.body;
-
-  // Teacher hardcoded login (change these)
-  if (username === 'teacher' && password === 'teacherpassword') {
-    req.session.isTeacher = true;
-    return res.redirect('/dashboard');
-  }
-
-  const student = db.prepare('SELECT * FROM students WHERE username = ?').get(username);
-  if (!student || !bcrypt.compareSync(password, student.password)) {
-    return res.render('login', { title: 'Login', error: 'Invalid username or password' });
-  }
-
-  req.session.studentId = student.id;
-  req.session.username = student.username;
-  res.redirect('/home');
-});
-
-app.get('/logout', (req, res) => {
-  req.session.destroy();
-  res.redirect('/login');
-});
-
-app.get('/dashboard', requireTeacher, (req, res) => {
-  const students = db.prepare('SELECT * FROM students').all();
-  const submissions = db.prepare(`
-    SELECT s.*, st.username, e.title as exercise_title
-    FROM submissions s
-    JOIN students st ON s.student_id = st.id
-    JOIN exercises e ON s.exercise_id = e.id
-    ORDER BY s.submitted_at DESC
-  `).all();
-  res.render('dashboard', { title: 'Dashboard', students, submissions });
-});
-
-// app.get('/exercises', requireLogin, (req, res) => {
-//     const exercises = db.prepare('SELECT * FROM exercises').all();
-//     res.render('exercises', {title: 'Exercises', exercises});
-// });
-
-// app.get('/exercises/:id', requireLogin, (req, res) => {
-//   const exercise = db.prepare('SELECT * FROM exercises WHERE id = ?').get(req.params.id);
-//   if (!exercise) return res.status(404).send('Exercise not found');
-//   res.render('editor', { title: exercise.title, exercise });
-// });
-
-// app.post('/submit/:exerciseId', requireLogin, (req, res) => {
-//   const { code } = req.body;
-//   const exercise = db.prepare('SELECT * FROM exercises WHERE id = ?').get(req.params.exerciseId);
-//   if (!exercise) return res.status(404).json({ error: 'Exercise not found' });
-
-//   // Placeholder — you'll add real checks here later
-//   const passed = false;
-
-//   db.prepare(`
-//     INSERT INTO submissions (student_id, exercise_id, code, passed)
-//     VALUES (?, ?, ?, ?)
-//   `).run(req.session.studentId, exercise.id, code, passed ? 1 : 0);
-
-//   res.json({ passed, feedback: 'Submitted!' });
-// });
 
 app.post('/hint', requireLogin, async (req, res) => {
     const { code, exerciseDescription } = req.body;
@@ -174,25 +76,10 @@ app.post('/hint', requireLogin, async (req, res) => {
       - Use markdown formatting.
         `
     });
-    // const response = {text: "test lol"}
     console.log("Done!")
     console.log(response.text)
     res.json({hint: response.text});
 });
-
-
-// async function main() {
-//   const response = await ai.models.generateContent({
-//     model: "gemini-3.5-flash",
-//     contents: "Explain how AI works in a few words",
-//   });
-
-//   console.log(response.text);
-// }
-
-// main();
-
-
 
 app.listen(port, () => {
   console.log(`Example app listening on port... ${port}`);

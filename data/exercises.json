@@ -3,7 +3,12 @@
         {
         "id": "js-refresher-1",
         "title": "Functions refresher",
-        "exerciseIds": ["func-basic-1", "func-basic-2", "func-basic-3"]
+        "exerciseIds": ["func-basic-1", "func-basic-2", "func-basic-3", "func-basic-4", "func-basic-5"]
+        },
+        {
+        "id": "js-refresher-2",
+        "title": "Array refresher",
+        "exerciseIds": ["arr-basic-1", "arr-basic-2", "arr-basic-3"]
         }
     ],
     "exercises": [
@@ -28,8 +33,48 @@
             "concept": "functions",
             "title": "Return a value",
             "difficulty": 1,
-            "description": "Write a function named `double`. Add a parameter called `number`. In the function, it should *return* number * 2.\n\nFor example:\n```js\nconsole.log(double(5));\n```\nThis should print `10` to the console.",
+            "description": "Write a function named `double`. Add a parameter called `number`. In the function, it should *return* number * 2.\n\n Call this function in console.log. For example:\n```js\nconsole.log(double(5));\n```\nThis should print `10` to the console.",
             "starterCode": "// write your function here\n"
+        },
+        {
+            "id": "func-basic-4",
+            "concept": "functions",
+            "title": "Multiple Parameters",
+            "difficulty": 1,
+            "description": "Write a function named getRectangleArea. Add two parameters, width and height. Return the area of a rectangle.\n\n Call this function to return an area of 100 (any two numbers that multiply to 100 is fine)",
+            "starterCode": "// write your function here\n"
+        },
+        {
+            "id": "func-basic-5",
+            "concept": "functions",
+            "title": "Max of 3",
+            "difficulty": 1,
+            "description": "Write a function named maxOfThree. Give it 3 parameters. Return the biggest of the 3 parameters.\n\n Call this function in a console.log. For example:\n```js\nconsole.log(maxOfThree(1, 2, 3));\n```\nThis should print `3` to the console. ",
+            "starterCode": "// write your function here\n"
+        },
+        {
+            "id": "arr-basic-1",
+            "concept": "arrays",
+            "title": "Create an Array",
+            "difficulty": 1,
+            "description": "Create an array named 'foods'. Add 5 of your favorite foods to it (they must be STRING!)",
+            "starterCode": "// write your code here\n"
+        },
+        {
+            "id": "arr-basic-2",
+            "concept": "arrays",
+            "title": "Loop through Array",
+            "difficulty": 1,
+            "description": "Loop through the array and print each item in the array.",
+            "starterCode": "// write your code here\n"
+        },
+        {
+            "id": "arr-basic-3",
+            "concept": "arrays",
+            "title": "Index an Array",
+            "difficulty": 1,
+            "description": "Print the first and third items in your array using indexes (the square bracket syntax)",
+            "starterCode": "// write your code here\n"
         }
     ]
 }
