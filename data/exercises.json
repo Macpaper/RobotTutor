@@ -65,7 +65,7 @@
             "concept": "arrays",
             "title": "Loop through Array",
             "difficulty": 1,
-            "description": "Loop through the array and print each item in the array.",
+            "description": "Create an array of 5 things (numbers or strings, or anything really).\n Loop through the array and print each item in the array.",
             "starterCode": "// write your code here\n"
         },
         {
@@ -73,7 +73,7 @@
             "concept": "arrays",
             "title": "Index an Array",
             "difficulty": 1,
-            "description": "Print the first and third items in your array using indexes (the square bracket syntax)",
+            "description": "Create an array with at least 3 items. Print the first and third items in your array using indexes (the square bracket syntax)",
             "starterCode": "// write your code here\n"
         }
     ]
