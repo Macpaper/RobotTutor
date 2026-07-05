@@ -9,10 +9,15 @@ const exerciseChecks = {
       const greeting = runInSandbox('greeting');
       if (typeof greeting !== 'function') return false;
 
+      // Count occurrences of "greeting(" — the function definition itself
+      // accounts for exactly one. A genuine call elsewhere means 2+.
+      const occurrences = (code.match(/greeting\s*\(/g) || []).length;
+      if (occurrences < 2) return false;
+
+
       const beforeLength = consoleOutput.length;
       runInSandbox('greeting()');
       const newLines = consoleOutput.slice(beforeLength);
-
       return newLines.some((line) => line.includes('Hello!'));
     } catch {
       return false;
@@ -24,6 +29,9 @@ const exerciseChecks = {
       const greetPerson = runInSandbox('greetPerson');
       if (typeof greetPerson !== 'function') return false;
       if (greetPerson.length !== 1) return false; // must accept exactly one parameter
+
+      const occurrences = (code.match(/greetPerson\s*\(/g) || []).length;
+      if (occurrences < 2) return false;
 
       const beforeLength = consoleOutput.length;
       runInSandbox('greetPerson("Zorblex123")'); // call it with a distinctive test name
@@ -39,6 +47,11 @@ const exerciseChecks = {
     try {
       const double = runInSandbox('double');
       if (typeof double !== 'function') return false;
+      if (double.length !== 1) return false;
+
+      const occurrences = (code.match(/double\s*\(/g) || []).length;
+      if (occurrences < 2) return false;
+
       return double(5) === 10 && double(0) === 0 && double(-3) === -6;
     } catch {
       return false;
@@ -48,9 +61,12 @@ const exerciseChecks = {
     try {
       const getRectangleArea = runInSandbox('getRectangleArea');
       if (typeof getRectangleArea !== 'function') return false;
-      const cases = [
-        [4, 5], [10, 10], [3, 7], [1, 1],
-      ];
+      if (getRectangleArea.length !== 2) return false;
+
+      const occurrences = (code.match(/getRectangleArea\s*\(/g) || []).length;
+      if (occurrences < 2) return false;
+
+      const cases = [[4, 5], [10, 10], [3, 7], [1, 1]];
       return cases.every(([w, h]) => getRectangleArea(w, h) === w * h);
     } catch {
       return false;
@@ -61,10 +77,12 @@ const exerciseChecks = {
     try {
       const maxOfThree = runInSandbox('maxOfThree');
       if (typeof maxOfThree !== 'function') return false;
+      if (maxOfThree.length !== 3) return false;
 
-      const cases = [
-        [1, 2, 3], [10, 5, 2], [-1, -5, -2], [7, 7, 3], [0, 0, 0],
-      ];
+      const occurrences = (code.match(/maxOfThree\s*\(/g) || []).length;
+      if (occurrences < 2) return false;
+
+      const cases = [[1, 2, 3], [10, 5, 2], [-1, -5, -2], [0, 0, 0]];
       return cases.every(([a, b, c]) => maxOfThree(a, b, c) === Math.max(a, b, c));
     } catch {
       return false;
@@ -85,15 +103,16 @@ const exerciseChecks = {
 
   'arr-basic-2': (code, consoleOutput) => {
     const hasLoop = /for\s*\(|\.forEach\s*\(|while\s*\(/.test(code);
-    const printedMultiple = consoleOutput.length >= 2;
+    const printedMultiple = consoleOutput.length >= 3;
     return hasLoop && printedMultiple;
   },
-
   'arr-basic-3': (code, consoleOutput) => {
-    const hasFirstIndex = /\[\s*0\s*\]/.test(code);
-    const hasThirdIndex = /\[\s*2\s*\]/.test(code);
+    // Capture the variable name used before [0], require the SAME variable used before [2]
+    const firstAccess = code.match(/(\w+)\s*\[\s*0\s*\]/);
+    const thirdAccess = code.match(/(\w+)\s*\[\s*2\s*\]/);
+    const sameVariable = firstAccess && thirdAccess && firstAccess[1] === thirdAccess[1];
     const printedTwice = consoleOutput.length >= 2;
-    return hasFirstIndex && hasThirdIndex && printedTwice;
+    return sameVariable && printedTwice;
   },
 };
 
