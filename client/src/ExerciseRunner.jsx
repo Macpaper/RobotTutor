@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { marked } from 'marked';
 import Editor from '@monaco-editor/react';
 import './ExerciseRunner.css';
+import confetti from 'canvas-confetti';
 
 /**
  * ExerciseRunner
@@ -21,6 +22,7 @@ export default function ExerciseRunner({ setId }) {
   const [consoleOutput, setConsoleOutput] = useState([]);
   const [running, setRunning] = useState(false);
   const [statusMessage, setStatusMessage] = useState(null); // { type: 'success' | 'error' | 'info', text }
+  const [justCompleted, setJustCompleted] = useState(null);
   const [isLightMode, setIsLightMode] = useState(() =>
     document.body.classList.contains('light-mode')
   );
@@ -86,6 +88,8 @@ export default function ExerciseRunner({ setId }) {
 
       if (isCorrect) {
         setPassed((prev) => [...prev, exercise.id]);
+        setJustCompleted(exercise.id);
+        setTimeout(() => setJustCompleted(null), 600); // matches animation duration
         if (!isLast) {
           setStatusMessage({ type: 'success', text: 'Correct! 🎉 Moving to the next exercise...'})
           const next = index + 1;
@@ -98,6 +102,11 @@ export default function ExerciseRunner({ setId }) {
           }, 1200);
         } else {
           setStatusMessage({ type: 'success', text: '🎉 Set complete! Great work.' })
+            confetti({
+              particleCount: 150,
+              spread: 80,
+              origin: { y: 0.6 },
+            });
         }
       } else {
         setStatusMessage({ type: 'error', text: feedback || 'Not quite — try again.' });
@@ -133,7 +142,13 @@ export default function ExerciseRunner({ setId }) {
       <div className="exercise-runner__dots">
         {exercises.map((ex, i) => {
           const status = passed.includes(ex.id) ? 'complete' : i === index ? 'current' : 'upcoming';
-          return <span key={ex.id} className={`exercise-runner__dot exercise-runner__dot--${status}`} />;
+          const isPulsing = justCompleted === ex.id;
+          return (
+            <span
+              key={ex.id}
+              className={`exercise-runner__dot exercise-runner__dot--${status} ${isPulsing ? 'exercise-runner__dot--pulse' : ''}`}
+            />
+          );
         })}
       </div>
 

@@ -1,0 +1,9 @@
+Pre-launch checklist — a few things worth testing deliberately, not just organically discovering
+Your instinct about signup on other computers is a good one to check, but I'd add a few more:
+
+Signup/login from a different device/browser — yes, test this explicitly. Also test two students signing up with the same username (should show your "already taken" error, not crash).
+Session behavior across browser restarts — since you're using express-session with default (memory) store, sessions reset on server restart, but should persist across a student just closing/reopening their browser tab. Confirm that's true.
+What happens on a slow/flaky connection — e.g. hit "Check" and immediately close the tab. Nothing catastrophic should happen, but worth a quick sanity check.
+Concurrent students — have two people (or two incognito windows) logged in as different students working through exercises at the same time, confirm they don't see each other's progress/state (your setProgress Map is keyed correctly per the code I've seen, but worth confirming live).
+HTTPS is actually forced — since you set secure: true on the session cookie earlier, double check http:// (not https) doesn't quietly break login for a student who types the domain without https://. Cloudflare/certbot should redirect this, but confirm it actually does.
+Mobile/tablet — if any students might use a school Chromebook or tablet, quickly check the layout doesn't break, especially Monaco's editor sizing.

@@ -27,15 +27,12 @@ const exerciseChecks = {
   },
   'func-basic-4': (code, consoleOutput, runInSandbox) => {
     try {
-      const getSquareArea = runInSandbox(`${code}\ngetRectangleArea;`);
-      if (typeof getSquareArea !== 'function') return false;
-
-      // Test correctness directly rather than relying on a specific console.log call —
-      // more robust than requiring the student to log a particular pair of numbers.
+      const getRectangleArea = runInSandbox('getRectangleArea');
+      if (typeof getRectangleArea !== 'function') return false;
       const cases = [
         [4, 5], [10, 10], [3, 7], [1, 1],
       ];
-      return cases.every(([w, h]) => getSquareArea(w, h) === w * h);
+      return cases.every(([w, h]) => getRectangleArea(w, h) === w * h);
     } catch {
       return false;
     }
@@ -43,7 +40,7 @@ const exerciseChecks = {
 
   'func-basic-5': (code, consoleOutput, runInSandbox) => {
     try {
-      const maxOfThree = runInSandbox(`${code}\nmaxOfThree;`);
+      const maxOfThree = runInSandbox('maxOfThree');
       if (typeof maxOfThree !== 'function') return false;
 
       const cases = [
@@ -56,7 +53,7 @@ const exerciseChecks = {
   },
   'arr-basic-1': (code, consoleOutput, runInSandbox) => {
     try {
-      const foods = runInSandbox(`${code}\nfoods;`);
+      const foods = runInSandbox('foods');
       return (
         Array.isArray(foods) &&
         foods.length >= 5 &&
