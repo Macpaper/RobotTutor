@@ -4,16 +4,35 @@
 // but this is the one that actually decides what gets written to the DB.
 
 const exerciseChecks = {
-  'func-basic-1': (code, consoleOutput) => {
-    const definesFunction = /function\s+greeting\s*\(\s*\)/.test(code);
-    const printed = consoleOutput.some((line) => line.includes('Hello!'));
-    return definesFunction && printed;
+  'func-basic-1': (code, consoleOutput, runInSandbox) => {
+    try {
+      const greeting = runInSandbox('greeting');
+      if (typeof greeting !== 'function') return false;
+
+      const beforeLength = consoleOutput.length;
+      runInSandbox('greeting()');
+      const newLines = consoleOutput.slice(beforeLength);
+
+      return newLines.some((line) => line.includes('Hello!'));
+    } catch {
+      return false;
+    }
   },
 
-  'func-basic-2': (code, consoleOutput) => {
-    const definesFunction = /function\s+greetPerson\s*\(\s*name\s*\)/.test(code);
-    const printed = consoleOutput.some((line) => line.includes('Greetings,'));
-    return definesFunction && printed;
+  'func-basic-2': (code, consoleOutput, runInSandbox) => {
+    try {
+      const greetPerson = runInSandbox('greetPerson');
+      if (typeof greetPerson !== 'function') return false;
+      if (greetPerson.length !== 1) return false; // must accept exactly one parameter
+
+      const beforeLength = consoleOutput.length;
+      runInSandbox('greetPerson("Zorblex123")'); // call it with a distinctive test name
+      const newLines = consoleOutput.slice(beforeLength);
+
+      return newLines.some((line) => line.includes('Greetings,') && line.includes('Zorblex123'));
+    } catch {
+      return false;
+    }
   },
 
   'func-basic-3': (code, consoleOutput, runInSandbox) => {
