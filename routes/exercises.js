@@ -49,22 +49,9 @@ router.post('/api/exercises/:exerciseId/run', requireLogin, (req, res) => {
     return res.status(404).json({ error: 'Exercise not found' });
   }
 
-  const key = `${getSessionKey(req)}:${setId}`;
-  const history = setProgress.get(key) || [];
+  const { output, error } = runCode(code);
 
-  const BOUNDARY = '__EXERCISE_BOUNDARY__';
-  const combinedCode = [
-    ...history.map((h) => h.code),
-    `console.log(${JSON.stringify(BOUNDARY)});`,
-    code,
-  ].join('\n');
-
-  const { output, error } = runCode(combinedCode);
-
-  const boundaryIndex = output.lastIndexOf(BOUNDARY);
-  const currentOutput = boundaryIndex === -1 ? output : output.slice(boundaryIndex + 1);
-
-  res.json({ consoleOutput: currentOutput, error: error || null });
+  res.json({ consoleOutput: output, error: error || null });
 });
 
 // Grades a single exercise submission. No persistence yet — just runs the
@@ -78,20 +65,7 @@ router.post('/api/exercises/:exerciseId/check', requireLogin, (req, res) => {
     return res.status(404).json({ error: 'Exercise not found' });
   }
 
-  const key = `${getSessionKey(req)}:${setId}`;
-  const history = setProgress.get(key) || [];
-
-  const BOUNDARY = '__EXERCISE_BOUNDARY__';
-  const combinedCode = [
-    ...history.map((h) => h.code),
-    `console.log(${JSON.stringify(BOUNDARY)});`,
-    code,
-  ].join('\n');
-
-  const { output, error, context } = runCode(combinedCode);
-
-  const boundaryIndex = output.lastIndexOf(BOUNDARY);
-  const currentOutput = boundaryIndex === -1 ? output : output.slice(boundaryIndex + 1);
+  const { output, error, context } = runCode(code);
 
   let passed = false;
   if (!error) {
@@ -100,23 +74,11 @@ router.post('/api/exercises/:exerciseId/check', requireLogin, (req, res) => {
     passed = checkFn ? checkFn(code, output, runInSandbox) : false;
   }
 
-  if (passed) {
-    const updated = [
-      ...history.filter((h) => h.exerciseId !== exercise.id),
-      { exerciseId: exercise.id, code },
-    ];
-    setProgress.set(key, updated);
-  }
-
-    // studentId is right here whenever ready to persist this
-    // ex. db.prepare('INSERT INTO submissions (student_id, exercise_id, code, passed) VALUES (?, ?, ?, ?)')
-    //        .run(studentId, exercise.id, code, passed ? 1 : 0);
-
   res.json({
     passed,
     error,
     feedback: error ? `Error: ${error}` : passed ? 'Correct!' : 'Not quite — try again.',
-    consoleOutput: currentOutput,
+    consoleOutput: output,
   });
 });
 
