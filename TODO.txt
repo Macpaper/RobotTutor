@@ -18,4 +18,6 @@ Make sure you can track which students completed which exercises. They should be
 Create their own account
 Go to the exercise
 Complete each one
-Then on your end, be able to see all this data. 
+Then on your end, be able to see all this data.er 
+pgjwt
+pgcryto

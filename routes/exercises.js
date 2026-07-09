@@ -5,6 +5,7 @@ const exerciseData = require('../data/exercises.json'); // swap for a DB later i
 const { runCode, runInContext } = require('../checks/runCode');
 const { exerciseChecks } = require('../checks/exerciseChecks');
 const { requireLogin } = require('./auth');
+const pool = require('../db/index');
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
@@ -23,6 +24,22 @@ router.get('/exercises', requireLogin, (req, res) => {
     sets: exerciseData.sets, 
     extraHead: '<link rel="stylesheet" href="css/exercises.css">',
   });
+});
+
+router.post('/exercises', requireLogin, async (req, res) => {
+  const { exerciseId, code, passed } = req.body;
+  const studentId = req.session.studentId
+  try {
+    const insertResult = await pool.query(
+      `INSERT INTO submissions (student_id, exercise_id, code, passed) VALUES ($1, $2, $3, $4)`,
+      [studentId, exerciseId, code, passed]
+    );
+    // const submission = insertResult.rows[0];
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, error: 'Failed to save submission' });
+  }
 });
 
 // Page route — renders the mount point, setId comes from the URL.

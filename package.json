@@ -12,6 +12,7 @@
     "express-session": "^1.19.0",
     "monaco-editor": "^0.55.1",
     "openai": "^6.39.1",
+    "pg": "^8.22.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7"
   },

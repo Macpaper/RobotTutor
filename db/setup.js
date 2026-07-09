@@ -1,29 +1,32 @@
-// db/setup.js
-const Database = require('better-sqlite3');
-const db = new Database('./db/database.db');
+require('dotenv').config()
+const pool = require('./index');
 
-db.exec(`
-  DROP TABLE IF EXISTS exercises;
-  DROP TABLE IF EXISTS submissions;
-  DROP TABLE IF EXISTS students;
-  CREATE TABLE IF NOT EXISTS students (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username TEXT UNIQUE NOT NULL,
-    password TEXT NOT NULL,
-    email TEXT UNIQUE,
-    is_active INTEGER DEFAULT 1,
-    join_date TEXT DEFAULT CURRENT_TIMESTAMP
-  );
+async function setup() {
+  await pool.query(`
+    DROP TABLE IF EXISTS submissions;
+    DROP TABLE IF EXISTS students;
 
-  CREATE TABLE IF NOT EXISTS submissions (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    student_id INTEGER REFERENCES students(id),
-    exercise_id TEXT NOT NULL,
-    code TEXT NOT NULL,
-    passed INTEGER NOT NULL,
-    submitted_at TEXT DEFAULT CURRENT_TIMESTAMP
-  );
-  CREATE INDEX IF NOT EXISTS idx_submissions_student ON submissions(student_id);
-`);
+    CREATE TABLE students (
+      id SERIAL PRIMARY KEY,
+      username TEXT UNIQUE NOT NULL,
+      password TEXT NOT NULL,
+      email TEXT UNIQUE,
+      join_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
 
-console.log('Tables created.');
+    CREATE TABLE submissions (
+      id SERIAL PRIMARY KEY,
+      student_id INTEGER NOT NULL REFERENCES students(id),
+      exercise_id TEXT NOT NULL,
+      code TEXT NOT NULL,
+      passed BOOLEAN NOT NULL,
+      submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE INDEX idx_submissions_student ON submissions(student_id);
+  `);
+  console.log('Tables created.');
+  await pool.end();
+}
+
+setup();

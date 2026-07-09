@@ -117,6 +117,17 @@ export default function ExerciseRunner({ setId }) {
       const { passed: isCorrect, error, feedback, consoleOutput: output } = await res.json();
       setConsoleOutput(output || []);
 
+      const exerciseId = exercise.id;
+      const submissionPostResponse = await fetch('/exercises', {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ exerciseId, code, passed: isCorrect }),
+      });
+
+       if (!submissionPostResponse.ok) {
+        throw new Error(`HTTP error! Status: ${submissionPostResponse.status} didn't submit something to db`);
+       }
+
       if (error) {
         alert(`Error in your code:\n${error}`);
         return;
